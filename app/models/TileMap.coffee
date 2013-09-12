@@ -1,5 +1,4 @@
 Model = require "models/base/Model"
-HeightmapModel = require "models/Heightmap"
 config = require "config"
 utils = require "lib/utils"
 
