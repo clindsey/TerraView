@@ -5,6 +5,8 @@ TerraView
 
 [Read the annotated source here](http://clindsey.github.io/TerraView/docs/).
 
+[Run the tests here](http://clindsey.github.io/TerraView/test/).
+
 A procedurally generated planet with simple critters, rendered on canvas.
 
 Built with coffeescript on grunt, using gamecore.js and easel.
