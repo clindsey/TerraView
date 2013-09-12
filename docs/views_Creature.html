@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Creature.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="config.html">
+                app/config.coffee
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                app/index.coffee
+              </a>
+            
+              
+              <a class="source" href="lib_utils.html">
+                app/lib/utils.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Creature.html">
+                app/models/Creature.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Heightmap.html">
+                app/models/Heightmap.coffee
+              </a>
+            
+              
+              <a class="source" href="models_HeightmapChunk.html">
+                app/models/HeightmapChunk.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Tile.html">
+                app/models/Tile.coffee
+              </a>
+            
+              
+              <a class="source" href="models_TileMap.html">
+                app/models/TileMap.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Viewport.html">
+                app/models/Viewport.coffee
+              </a>
+            
+              
+              <a class="source" href="models_base_Model.html">
+                app/models/base/Model.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Creature.html">
+                app/views/Creature.coffee
+              </a>
+            
+              
+              <a class="source" href="views_EntityManager.html">
+                app/views/EntityManager.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Stage.html">
+                app/views/Stage.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Tile.html">
+                app/views/Tile.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Viewport.html">
+                app/views/Viewport.coffee
+              </a>
+            
+              
+              <a class="source" href="views_base_View.html">
+                app/views/base/View.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Creature.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>View = require <span class="string">"views/base/View"</span>
+utils = require <span class="string">"lib/utils"</span>
+config = require <span class="string">"config"</span>
+
+module.exports = View.extend <span class="string">"CreatureView"</span>,
+    create: (creatureModel, viewportModel) -&gt;
+      creatureView = <span class="property">@_super</span>()
+
+      creatureView.model = creatureModel
+      creatureView.viewportModel = viewportModel
+
+      creatureView.spriteSheet = <span class="keyword">new</span> createjs.SpriteSheet <span class="property">@spriteSheetOptions</span>
+
+      creatureView.el = <span class="keyword">new</span> createjs.BitmapAnimation creatureView.spriteSheet
+
+      creatureView.el.gotoAndPlay <span class="string">"walkSouth"</span>
+
+      EventBus.addEventListener <span class="string">"!move:<span class="subst">#{creatureModel.uniqueId}</span>"</span>, creatureView.onModelMove, creatureView
+      EventBus.addEventListener <span class="string">"!move:<span class="subst">#{viewportModel.uniqueId}</span>"</span>, creatureView.setPosition, creatureView
+
+      creatureView.setPosition()
+
+      _.bindAll creatureView, <span class="string">"onTick"</span>
+
+      creatureView.el.addEventListener <span class="string">"tick"</span>, creatureView.onTick</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>intended x/y are to help with smooth movement between tiles</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      creatureView.el.x = creatureView.intendedX
+      creatureView.el.y = creatureView.intendedY
+
+      creatureView
+
+    spriteSheetOptions:
+      images: [utils.tilesetImg]
+      frames:
+        width: <span class="number">16</span>
+        height: <span class="number">16</span>
+      animations:
+        walkEast:
+          frames: [<span class="number">288</span>, <span class="number">289</span>, <span class="number">290</span>, <span class="number">291</span>]
+          frequency: <span class="number">15</span>
+        walkNorth:
+          frames: [<span class="number">292</span>, <span class="number">293</span>, <span class="number">294</span>, <span class="number">295</span>]
+          frequency: <span class="number">15</span>
+        walkWest:
+          frames: [<span class="number">296</span>, <span class="number">297</span>, <span class="number">298</span>, <span class="number">299</span>]
+          frequency: <span class="number">15</span>
+        walkSouth:
+          frames: [<span class="number">300</span>, <span class="number">301</span>, <span class="number">302</span>, <span class="number">303</span>]
+          frequency: <span class="number">15</span>
+        idleEast:
+          frames: [<span class="number">320</span>, <span class="number">321</span>]
+          frequency: <span class="number">30</span>
+        idleNorth:
+          frames: [<span class="number">322</span>, <span class="number">323</span>]
+          frequency: <span class="number">30</span>
+        idleWest:
+          frames: [<span class="number">324</span>, <span class="number">325</span>]
+          frequency: <span class="number">30</span>
+        idleSouth:
+          frames: [<span class="number">326</span>, <span class="number">327</span>]
+          frequency: <span class="number">30</span>
+  ,
+    onModelMove: -&gt;
+      deltaX = <span class="number">0</span>
+      deltaY = <span class="number">0</span>
+
+      <span class="keyword">switch</span> <span class="property">@model</span>.direction
+        <span class="keyword">when</span> <span class="string">"North"</span>
+          deltaY = config.tileHeight
+        <span class="keyword">when</span> <span class="string">"East"</span>
+          deltaX = <span class="number">0</span> - config.tileWidth
+        <span class="keyword">when</span> <span class="string">"South"</span>
+          deltaY = <span class="number">0</span> - config.tileHeight
+        <span class="keyword">when</span> <span class="string">"West"</span>
+          deltaX = config.tileWidth
+
+      <span class="property">@offsetX</span> = deltaX
+      <span class="property">@offsetY</span> = deltaY</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Handle smooth movement between tiles.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      createjs.Tween.get(@).to {offsetX: <span class="number">0</span>, offsetY: <span class="number">0</span>}, <span class="number">500</span>
+
+      <span class="property">@setPosition</span>()
+
+    setPosition: -&gt;
+      animation = <span class="string">"walk<span class="subst">#{@model.direction}</span>"</span>
+
+      <span class="property">@el</span>.gotoAndPlay animation <span class="keyword">unless</span> <span class="property">@el</span>.currentAnimation <span class="keyword">is</span> animation
+
+      centerX = Math.floor <span class="property">@viewportModel</span>.width / <span class="number">2</span>
+      centerY = Math.floor <span class="property">@viewportModel</span>.height / <span class="number">2</span>
+
+      viewX = <span class="property">@viewportModel</span>.x
+      viewY = <span class="property">@viewportModel</span>.y
+
+      myX = <span class="property">@model</span>.x
+      myY = <span class="property">@model</span>.y
+
+      x = (myX - viewX) + centerX
+      y = (myY - viewY) + centerY
+
+      worldWidth = config.worldTileWidth
+      halfWorldWidth = Math.floor worldWidth / <span class="number">2</span>
+
+      worldHeight = config.worldTileHeight
+      halfWorldHeight = Math.floor worldHeight / <span class="number">2</span>
+
+      offsetX = <span class="number">0</span>
+      offsetY = <span class="number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Handle wrapping around the viewport.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> myX &gt; viewX + halfWorldWidth
+        offsetX -= worldWidth
+
+      <span class="keyword">if</span> myX &lt; viewX - halfWorldWidth
+        offsetX += worldWidth
+
+      <span class="keyword">if</span> myY &gt; viewY + halfWorldHeight
+        offsetY -= worldHeight
+
+      <span class="keyword">if</span> myY &lt; viewY - halfWorldHeight
+        offsetY += worldHeight
+
+      myNewX = (x + offsetX)
+      myNewY = (y + offsetY)
+
+      newX = myNewX * config.tileWidth
+      newY = myNewY * config.tileHeight
+
+      <span class="property">@intendedX</span> = newX
+      <span class="property">@intendedY</span> = newY
+
+    onTick: -&gt;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Intended <code>x</code>/<code>y</code> are here to help with smooth movement between tiles.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="property">@el</span>.x = <span class="property">@intendedX</span> + <span class="property">@offsetX</span>
+      <span class="property">@el</span>.y = <span class="property">@intendedY</span> + <span class="property">@offsetY</span>
+
+    dispose: -&gt;
+      <span class="property">@el</span>.removeEventListener <span class="string">"tick"</span>, <span class="property">@onTick</span>
+
+      EventBus.removeEventListener <span class="string">"!move:<span class="subst">#{@model.uniqueId}</span>"</span>, <span class="property">@setPosition</span>, @
+
+      <span class="property">@_super</span>()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

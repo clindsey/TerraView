@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>TileMap.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="config.html">
+                app/config.coffee
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                app/index.coffee
+              </a>
+            
+              
+              <a class="source" href="lib_utils.html">
+                app/lib/utils.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Creature.html">
+                app/models/Creature.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Heightmap.html">
+                app/models/Heightmap.coffee
+              </a>
+            
+              
+              <a class="source" href="models_HeightmapChunk.html">
+                app/models/HeightmapChunk.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Tile.html">
+                app/models/Tile.coffee
+              </a>
+            
+              
+              <a class="source" href="models_TileMap.html">
+                app/models/TileMap.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Viewport.html">
+                app/models/Viewport.coffee
+              </a>
+            
+              
+              <a class="source" href="models_base_Model.html">
+                app/models/base/Model.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Creature.html">
+                app/views/Creature.coffee
+              </a>
+            
+              
+              <a class="source" href="views_EntityManager.html">
+                app/views/EntityManager.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Stage.html">
+                app/views/Stage.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Tile.html">
+                app/views/Tile.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Viewport.html">
+                app/views/Viewport.coffee
+              </a>
+            
+              
+              <a class="source" href="views_base_View.html">
+                app/views/base/View.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>TileMap.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>Model = require <span class="string">"models/base/Model"</span>
+HeightmapModel = require <span class="string">"models/Heightmap"</span>
+config = require <span class="string">"config"</span>
+utils = require <span class="string">"lib/utils"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>TileMap uses a binary data source to generate spritesheet tile data.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+module.exports = Model.extend <span class="string">"TileMapModel"</span>,
+    create: (tileSourceModelName) -&gt;
+      tileMapModel = <span class="property">@_super</span>()
+
+      tileMapModel.tileCache = []
+      tileMapModel.tileSourceModel = require(tileSourceModelName).create config.seed
+
+      tileMapModel
+  ,
+    collectNeighbors: (worldX, worldY) -&gt;
+      xl = config.worldTileWidth
+      yl = config.worldTileHeight
+
+      <span class="function"><span class="title">cx</span></span> = (ox) -&gt; utils.clamp ox, xl
+      <span class="function"><span class="title">cy</span></span> = (oy) -&gt; utils.clamp oy, yl
+
+      n = <span class="property">@tileSourceModel</span>.getCell worldX, cy(worldY - <span class="number">1</span>)
+      e = <span class="property">@tileSourceModel</span>.getCell cx(worldX + <span class="number">1</span>), worldY
+      s = <span class="property">@tileSourceModel</span>.getCell worldX, cy(worldY + <span class="number">1</span>)
+      w = <span class="property">@tileSourceModel</span>.getCell cx(worldX - <span class="number">1</span>), worldY
+      ne = <span class="property">@tileSourceModel</span>.getCell cx(worldX + <span class="number">1</span>), cy(worldY - <span class="number">1</span>)
+      se = <span class="property">@tileSourceModel</span>.getCell cx(worldX + <span class="number">1</span>), cy(worldY + <span class="number">1</span>)
+      sw = <span class="property">@tileSourceModel</span>.getCell cx(worldX - <span class="number">1</span>), cy(worldY + <span class="number">1</span>)
+      nw = <span class="property">@tileSourceModel</span>.getCell cx(worldX - <span class="number">1</span>), cy(worldY - <span class="number">1</span>)
+
+      [n, e, s, w, ne, se, sw, nw]
+
+    getArea: (sliceWidth, sliceHeight, centerX, centerY) -&gt;
+      data = []
+
+      xOffset = Math.floor sliceWidth / <span class="number">2</span>
+      yOffset = Math.floor sliceHeight / <span class="number">2</span>
+
+      <span class="keyword">for</span> y <span class="keyword">in</span> [<span class="number">0.</span>.sliceHeight - <span class="number">1</span>]
+        data[y] = []
+
+        <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">0.</span>.sliceWidth - <span class="number">1</span>]
+          worldX = utils.clamp x - xOffset + centerX, config.worldTileWidth
+          worldY = utils.clamp y - yOffset + centerY, config.worldTileHeight
+
+          data[y][x] = <span class="property">@getTile</span> worldX, worldY</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Binary <code>1</code>/<code>0</code> return.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getCell: (args...) -&gt;
+      <span class="property">@tileSourceModel</span>.getCell args...</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Returns the spritesheet index of a tile based on it&#39;s absolute world position.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getTile: (worldX, worldY) -&gt;
+      <span class="keyword">if</span> <span class="property">@tileCache</span>[worldY]? <span class="keyword">and</span> <span class="property">@tileCache</span>[worldY][worldX]?
+        <span class="keyword">return</span> <span class="property">@tileCache</span>[worldY][worldX]
+
+      cell = <span class="property">@tileSourceModel</span>.getCell worldX, worldY
+      neighbors = <span class="property">@collectNeighbors</span> worldX, worldY
+      index = <span class="property">@getIndexByNeighbors</span> cell, neighbors
+
+      <span class="property">@tileCache</span>[worldY] ?= []
+      <span class="property">@tileCache</span>[worldY][worldX] = index</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Determines the spritesheet index using a bitmasking
+<a href="http://www.angryfishstudios.com/2011/04/adventures-in-bitmasking/">Here&#39;s a great article about it</a>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getIndexByNeighbors: (tileValue, neighbors) -&gt;
+      index = <span class="number">0</span>
+
+      n = neighbors[<span class="number">0</span>]
+      e = neighbors[<span class="number">1</span>]
+      s = neighbors[<span class="number">2</span>]
+      w = neighbors[<span class="number">3</span>]
+      ne = neighbors[<span class="number">4</span>]
+      se = neighbors[<span class="number">5</span>]
+      sw = neighbors[<span class="number">6</span>]
+      nw = neighbors[<span class="number">7</span>]
+
+      <span class="keyword">if</span> tileValue
+        a = n &lt;&lt; n * <span class="number">4</span>
+        b = e &lt;&lt; e * <span class="number">5</span>
+        c = s &lt;&lt; s * <span class="number">6</span>
+        d = w &lt;&lt; w * <span class="number">7</span>
+        e = ne &lt;&lt; ne * <span class="number">0</span>
+        f = se &lt;&lt; se * <span class="number">1</span>
+        g = nw &lt;&lt; nw * <span class="number">3</span>
+        h = sw &lt;&lt; sw * <span class="number">2</span>
+
+        index = a + b + c + d + e + f + g + h
+
+      index
+
+    dispose: -&gt;
+      <span class="property">@tileSourceModel</span>.dispose()
+
+      <span class="property">@_super</span>()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

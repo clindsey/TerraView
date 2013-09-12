@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Stage.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page">
+            
+              
+              <a class="source" href="config.html">
+                app/config.coffee
+              </a>
+            
+              
+              <a class="source" href="index.html">
+                app/index.coffee
+              </a>
+            
+              
+              <a class="source" href="lib_utils.html">
+                app/lib/utils.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Creature.html">
+                app/models/Creature.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Heightmap.html">
+                app/models/Heightmap.coffee
+              </a>
+            
+              
+              <a class="source" href="models_HeightmapChunk.html">
+                app/models/HeightmapChunk.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Tile.html">
+                app/models/Tile.coffee
+              </a>
+            
+              
+              <a class="source" href="models_TileMap.html">
+                app/models/TileMap.coffee
+              </a>
+            
+              
+              <a class="source" href="models_Viewport.html">
+                app/models/Viewport.coffee
+              </a>
+            
+              
+              <a class="source" href="models_base_Model.html">
+                app/models/base/Model.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Creature.html">
+                app/views/Creature.coffee
+              </a>
+            
+              
+              <a class="source" href="views_EntityManager.html">
+                app/views/EntityManager.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Stage.html">
+                app/views/Stage.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Tile.html">
+                app/views/Tile.coffee
+              </a>
+            
+              
+              <a class="source" href="views_Viewport.html">
+                app/views/Viewport.coffee
+              </a>
+            
+              
+              <a class="source" href="views_base_View.html">
+                app/views/base/View.coffee
+              </a>
+            
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Stage.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>View = require <span class="string">"views/base/View"</span>
+ViewportModel = require <span class="string">"models/Viewport"</span>
+ViewportView = require <span class="string">"views/Viewport"</span>
+EntityManagerView = require <span class="string">"views/EntityManager"</span>
+TileMapModel = require <span class="string">"models/TileMap"</span>
+utils = require <span class="string">"lib/utils"</span>
+config = require <span class="string">"config"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The Stage View is where everything ties together.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+module.exports = View.extend <span class="string">"StageView"</span>,
+    create: (canvasEl) -&gt;
+      stageView = <span class="property">@_super</span>()
+
+      stageView.el = <span class="keyword">new</span> createjs.Stage canvasEl</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Used for updating creatures.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      stageView.lastUpdate = <span class="number">0</span>
+
+      stageView.tileMapModel = TileMapModel.create <span class="string">'models/Heightmap'</span>
+
+      stageView.viewportModel = ViewportModel.create <span class="number">0</span>, <span class="number">0</span>, <span class="number">30</span>, <span class="number">20</span>
+      stageView.viewportView = ViewportView.create stageView.viewportModel, stageView.tileMapModel
+      stageView.el.addChild stageView.viewportView.el
+
+      stageView.entityManagerView = EntityManagerView.create stageView.viewportModel
+      stageView.el.addChild stageView.entityManagerView.el
+      stageView.entityManagerView.addCreatures <span class="number">100</span>, stageView.tileMapModel
+
+
+      createjs.Ticker.setFPS <span class="number">60</span>
+      createjs.Ticker.useRAF = <span class="literal">true</span>
+
+      _.bindAll stageView, <span class="string">"onTick"</span>
+      createjs.Ticker.addEventListener <span class="string">"tick"</span>, stageView.onTick
+
+      createjs.Touch.enable stageView.el
+
+      stageView.el.update()
+
+      stageView
+  ,
+    onTick: (event) -&gt;
+      <span class="property">@el</span>.update()
+
+      timeDelta = event.time - <span class="property">@lastUpdate</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Update the creatures at 2hz</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="keyword">if</span> Math.floor(timeDelta / <span class="number">500</span>) &gt;= <span class="number">1</span>
+        <span class="property">@entityManagerView</span>.onTick()
+
+        <span class="property">@lastUpdate</span> = event.time
+
+
+    dispose: -&gt;
+      createjs.Ticker.removeEventListener <span class="string">"tick"</span>, <span class="property">@onTick</span>
+
+      createjs.Touch.disable <span class="property">@el</span>
+
+      <span class="property">@tileMapModel</span>.dispose()
+
+      <span class="property">@viewportView</span>.dispose()
+      <span class="property">@viewportModel</span>.dispose()
+
+      <span class="property">@entityManagerView</span>.dispose()
+
+      <span class="property">@_super</span>()</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
