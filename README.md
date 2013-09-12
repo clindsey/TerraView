@@ -1,6 +1,8 @@
 TerraView
 ===
 
+[View the Demo here.](http://clindsey.github.io/TerraView/).
+
 A procedurally generated planet with simple critters, rendered on canvas.
 
 Built with coffeescript on grunt, using gamecore.js and easel.
