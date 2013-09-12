@@ -2,6 +2,7 @@ TerraView
 ===
 
 [View the Demo here](http://clindsey.github.io/TerraView/).
+[Read the annotated source here](http://clindsey.github.io/TerraView/docs/).
 
 A procedurally generated planet with simple critters, rendered on canvas.
 
